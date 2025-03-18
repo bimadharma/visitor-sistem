@@ -36,20 +36,7 @@ $visitors = $conn->query("SELECT * FROM visitors WHERE checkout_time IS NULL");
             <?php while ($row = $visitors->fetch_assoc()): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['name']) ?></td>
-                    <td>
-                        <?php
-                        $datetime = $row['checkin_time'];
-                        $timestamp = strtotime($datetime);
-                        $bulan = [
-                            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                        ];
-                        $tanggal = date('d', $timestamp);
-                        $bulanNum = date('n', $timestamp);
-                        $tahun = date('Y', $timestamp);
-                        $jam = date('H:i', $timestamp);
-                        echo $tanggal . ' ' . $bulan[$bulanNum] . ' ' . $tahun . ' ' . $jam;
-                        ?>
-                    </td>
+                    <td><?= date('d F Y H:i', strtotime($row['checkin_time'])) ?></td>
                     <td>
                         <a href="?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Check-Out</a>
                     </td>
@@ -70,13 +57,21 @@ $visitors = $conn->query("SELECT * FROM visitors WHERE checkout_time IS NULL");
     $(document).ready(function() {
         $('#visitorTable').DataTable({
             responsive: true,
-            lengthMenu: [[5, 10, 25, -1], [5, 10, 25, "All"]],
+            lengthMenu: [
+                [5, 10, 25, -1],
+                [5, 10, 25, "All"]
+            ],
             "pageLength": -1,
             language: {
                 search: "Cari:",
                 lengthMenu: "Tampilkan _MENU_ entri",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                paginate: { first: "Pertama", last: "Terakhir", next: "Berikutnya", previous: "Sebelumnya" },
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                },
                 zeroRecords: "Tidak ada data",
                 infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
                 infoFiltered: "(disaring dari _MAX_ total entri)"
