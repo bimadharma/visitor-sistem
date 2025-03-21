@@ -8,20 +8,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $Kegiatan = mysqli_real_escape_string($conn, $_POST['Kegiatan']);
     $Perusahaan = mysqli_real_escape_string($conn, $_POST['Perusahaan']);
 
-    // Jika check-in kosong, isi otomatis dengan NOW()
-    $checkin = empty($_POST['checkin_time']) ? "NOW()" : "'" . mysqli_real_escape_string($conn, $_POST['checkin_time']) . "'";
-    
-    // Jika check-out kosong, biarkan NULL
-    $checkout = empty($_POST['checkout_time']) ? "NULL" : "'" . mysqli_real_escape_string($conn, $_POST['checkout_time']) . "'";
-
+    // Mulai membangun query
     $sql = "UPDATE visitors SET 
                 name='$name', 
                 NoTelepon='$NoTelepon', 
                 Kegiatan='$Kegiatan', 
-                Perusahaan='$Perusahaan', 
-                checkin_time=$checkin, 
-                checkout_time=$checkout 
-            WHERE id='$id'";
+                Perusahaan='$Perusahaan'";
+
+    // Tambahkan checkin_time jika diisi
+    if (!empty($_POST['checkin_time'])) {
+        $checkin = mysqli_real_escape_string($conn, $_POST['checkin_time']);
+        $sql .= ", checkin_time='$checkin'";
+    }
+
+    // Tambahkan checkout_time jika diisi
+    if (!empty($_POST['checkout_time'])) {
+        $checkout = mysqli_real_escape_string($conn, $_POST['checkout_time']);
+        $sql .= ", checkout_time='$checkout'";
+    }
+
+    // Tambahkan kondisi WHERE
+    $sql .= " WHERE id='$id'";
 
     if ($conn->query($sql) === TRUE) {
         header("Location: history.php");

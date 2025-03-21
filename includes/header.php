@@ -1,5 +1,5 @@
 <?php
-$current_page = basename($_SERVER['PHP_SELF']); 
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,6 +16,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             border-radius: 50px;
             padding: 10px 12px !important;
         }
+
         .nav-item {
             padding: 5px;
         }
@@ -32,7 +33,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             padding: 0 !important;
         }
     </style>
-    <link href="/Visitor-web/assets/img/logo-eximbank.png"  rel="shortcut icon">
+    <link href="/Visitor-web/assets/img/logo-eximbank.png" rel="shortcut icon">
 </head>
 
 <body>
@@ -49,26 +50,34 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'dashboard.php' ? 'active' : '' ?>" href="/Visitor-web/pages/dashboard.php">Dashboard</a>
                     </li>
-                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= $current_page == 'checkin.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkin.php">Check-In</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
-                        </li>
+                    <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role'])): ?>
+                        <?php if ($_SESSION['user']['role'] == 'admin'): ?>
+                            <!-- Menu khusus admin -->
+                            <li class="nav-item">
+                                <a class="nav-link <?= $current_page == 'checkin.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkin.php">Check-In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
+                            </li>
+                        <?php endif; ?>
+
+                        <!-- Logout untuk semua user -->
                         <li class="nav-item">
                             <a href="#" class="btn btn-danger text-white mx-2 p-2" data-bs-toggle="modal" data-bs-target="#logoutModal">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         </li>
-                    <?php elseif (!isset($_SESSION['user'])): ?>
+
+                    <?php else: ?>
+                        <!-- Jika belum login -->
                         <li class="nav-item">
                             <a class="nav-link" href="/Visitor-web/auth/login.php">Login</a>
                         </li>
                     <?php endif; ?>
+
                 </ul>
             </div>
         </div>
@@ -92,4 +101,3 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <div class="container mt-4 my-5">

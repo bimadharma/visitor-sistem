@@ -13,37 +13,38 @@ if (isset($_GET['id'])) {
 // Ambil data visitor yang belum check-out
 $visitors = $conn->query("SELECT * FROM visitors WHERE checkout_time IS NULL");
 ?>
+<div class="container mt-4 my-5 pt-2">
+    <h3 class="text-center py-4">Check-Out Visitor</h3>
 
-<h3 class="text-center py-4">Check-Out Visitor</h3>
+    <div class="container my-5">
+        <?php if (isset($_GET['success'])): ?>
+            <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+                Visitor telah berhasil check-out.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
-<div class="container my-5">
-    <?php if (isset($_GET['success'])): ?>
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
-            Visitor telah berhasil check-out.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
-
-    <table id="visitorTable" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Check-in Time</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $visitors->fetch_assoc()): ?>
+        <table id="visitorTable" class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <td><?= htmlspecialchars($row['name']) ?></td>
-                    <td><?= date('d F Y H:i', strtotime($row['checkin_time'])) ?></td>
-                    <td>
-                        <a href="?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Check-Out</a>
-                    </td>
+                    <th>Name</th>
+                    <th>Check-in Time</th>
+                    <th>Action</th>
                 </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php while ($row = $visitors->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['name']) ?></td>
+                        <td><?= date('d F Y H:i', strtotime($row['checkin_time'])) ?></td>
+                        <td>
+                            <a href="?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Check-Out</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- DataTables JS + CSS -->
@@ -74,7 +75,7 @@ $visitors = $conn->query("SELECT * FROM visitors WHERE checkout_time IS NULL");
                 },
                 zeroRecords: "Tidak ada data",
                 infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
-                infoFiltered: "(disaring dari _MAX_ total entri)"
+                infoFiltered: "(dari _MAX_ total entri)"
             }
         });
         $('#visitorTable_filter input').attr('placeholder', 'Search visitors...');

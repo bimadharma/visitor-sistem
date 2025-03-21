@@ -3,21 +3,39 @@ session_start();
 include '../includes/config.php';
 include '../includes/header.php';
 
+// Jika pengguna sudah login, alihkan ke dashboard
+if (isset($_SESSION['user'])) {
+    header("Location: ../pages/dashboard.php");
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
-    $result = $conn->query("SELECT * FROM users WHERE username='$username'");
+
+    // Gunakan prepared statement untuk menghindari SQL Injection
+    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username); // "s" berarti string
+    $stmt->execute();
+    $result = $stmt->get_result();
     $user = $result->fetch_assoc();
+    $stmt->close();
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user'] = $user;
-        header('Location: ../pages/dashboard.php');
+        $_SESSION['user'] = [
+            'username' => $user['username'],
+            'role' => $user['role']
+        ];
+        $_SESSION['LAST_ACTIVITY'] = time();
+        header("Location: ../pages/dashboard.php");
         exit;
-    } else {
+    }
+    else {
         $error = "Username atau password salah.";
     }
 }
 ?>
+
 <!-- FORM LOGIN -->
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="card shadow p-5" style="width: 100%; max-width: 600px;">

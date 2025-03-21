@@ -81,69 +81,70 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
     </style>
 
 </head>
-<h3 class="text-center py-4">Check-In Visitor</h3>
-<!-- <hr class="flex-grow-1 border-3"> -->
+<div class="container mt-4 my-5 pt-2">
+    <h3 class="text-center py-4">Check-In Visitor</h3>
+    <!-- <hr class="flex-grow-1 border-3"> -->
 
-<form method="post" enctype="multipart/form-data" class="my-5">
-    <!-- Input Nama -->
-    <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white"><i class="bi bi-person-fill"></i></span>
-        <input type="text" name="name" placeholder="Nama Lengkap" required class="form-control">
-    </div>
+    <form method="post" enctype="multipart/form-data" class="my-5">
+        <!-- Input Nama -->
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-primary text-white"><i class="bi bi-person-fill"></i></span>
+            <input type="text" name="name" placeholder="Nama Lengkap" required class="form-control">
+        </div>
 
-    <!-- Input No Telepon -->
-    <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white"><i class="bi bi-telephone-fill"></i></span>
-        <input type="number" name="NoTelepon" placeholder="No Telepon" class="form-control" required>
-    </div>
+        <!-- Input No Telepon -->
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-primary text-white"><i class="bi bi-telephone-fill"></i></span>
+            <input type="number" name="NoTelepon" placeholder="No Telepon" class="form-control" required>
+        </div>
 
-    <!-- Input Kegiatan -->
-    <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white"><i class="bi bi-briefcase-fill"></i></span>
-        <input type="text" name="Kegiatan" placeholder="Kegiatan" class="form-control" required>
-    </div>
+        <!-- Input Kegiatan -->
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-primary text-white"><i class="bi bi-briefcase-fill"></i></span>
+            <input type="text" name="Kegiatan" placeholder="Kegiatan" class="form-control" required>
+        </div>
 
-    <!-- Input Perusahaan -->
-    <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white"><i class="bi bi-building"></i></span>
-        <input type="text" name="Perusahaan" placeholder="Perusahaan" class="form-control" required>
-    </div>
+        <!-- Input Perusahaan -->
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-primary text-white"><i class="bi bi-building"></i></span>
+            <input type="text" name="Perusahaan" placeholder="Perusahaan" class="form-control" required>
+        </div>
 
-    <div class="row mb-4">
-        <!-- Kolom Kiri: Foto KTP -->
-        <div class="col-md-6 mb-3 text-center">
-            <label class="py-3"><strong>Foto KTP</strong></label>
-            <div class="border border-2 border-dark rounded-3 position-relative d-flex justify-content-center align-items-center mx-auto"
-                style="cursor: pointer; width: 300px; height: 225px;">
-                <div id="labelKTP" style="max-width: 100%; padding: 10px;">
-                    <i class="bi bi-upload fs-1 text-dark mb-2"></i>
-                    <p class="m-0 text-muted text-wrap" style="max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Klik untuk Upload KTP</p>
+        <div class="row mb-4">
+            <!-- Kolom Kiri: Foto KTP -->
+            <div class="col-md-6 mb-3 text-center">
+                <label class="py-3"><strong>Foto KTP</strong></label>
+                <div class="border border-2 border-dark rounded-3 position-relative d-flex justify-content-center align-items-center mx-auto"
+                    style="cursor: pointer; width: 300px; height: 225px;">
+                    <div id="labelKTP" style="max-width: 100%; padding: 10px;">
+                        <i class="bi bi-upload fs-1 text-dark mb-2"></i>
+                        <p class="m-0 text-muted text-wrap" style="max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Klik untuk Upload KTP</p>
+                    </div>
+                    <input type="file" name="foto_ktp" id="fotoKTP" accept="image/*" required
+                        class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0"
+                        style="cursor: pointer;">
                 </div>
-                <input type="file" name="foto_ktp" id="fotoKTP" accept="image/*" required
-                    class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                    style="cursor: pointer;">
+            </div>
+
+            <!-- Kolom Kanan: Foto Diri Kamera -->
+            <div class="col-md-6 mb-3 text-center">
+                <label class="py-3"><strong>Foto Diri (Kamera Langsung)</strong></label><br>
+                <video id="video" width="300" height="225" autoplay muted class="border rounded-3 mb-2 d-none"></video>
+                <canvas id="canvas" width="300" height="225" class="d-none"></canvas>
+                <img id="photoPreview" src="" alt="Hasil Foto" class="border rounded-3 mb-2 d-none" width="300" height="225"><br>
+                <input type="hidden" name="foto_diri_base64" id="fotoDiriBase64">
+                <button type="button" id="cameraBtn" class="btn btn-primary mb-2">Aktifkan Kamera</button>
             </div>
         </div>
 
-        <!-- Kolom Kanan: Foto Diri Kamera -->
-        <div class="col-md-6 mb-3 text-center">
-            <label class="py-3"><strong>Foto Diri (Kamera Langsung)</strong></label><br>
-            <video id="video" width="300" height="225" autoplay muted class="border rounded-3 mb-2 d-none"></video>
-            <canvas id="canvas" width="300" height="225" class="d-none"></canvas>
-            <img id="photoPreview" src="" alt="Hasil Foto" class="border rounded-3 mb-2 d-none" width="300" height="225"><br>
-            <input type="hidden" name="foto_diri_base64" id="fotoDiriBase64">
-            <button type="button" id="cameraBtn" class="btn btn-primary mb-2">Aktifkan Kamera</button>
+
+        <!-- Tombol Submit -->
+        <div class="text-center">
+            <button type="submit" name="submit" class="btn btn-success w-50 py-3 my-2 rounded-pill">Check-In</button>
         </div>
-    </div>
 
-
-    <!-- Tombol Submit -->
-    <div class="text-center">
-        <button type="submit" name="submit" class="btn btn-success w-50 py-3 my-2 rounded-pill">Check-In</button>
-    </div>
-
-</form>
-
+    </form>
+</div>
 <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
@@ -209,12 +210,11 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
         }
     });
 
-     // Auto close alert dalam 2 detik
-     setTimeout(function() {
-            var alert = document.getElementById('autoCloseAlert');
-            var bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }, 1000);
+    setTimeout(function() {
+        var alert = document.getElementById('autoCloseAlert');
+        var bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+    }, 2000);
 </script>
 
 
