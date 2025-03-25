@@ -24,7 +24,7 @@ $still_in_count = $still_in->num_rows;
         .wallpaper::before {
             content: "";
             position: absolute;
-            top: 0;
+            top: 3px;
             left: 0;
             width: 100%;
             height: 100%;
@@ -61,7 +61,7 @@ $still_in_count = $still_in->num_rows;
         <div class="row justify-content-center">
             <!-- Check-in Visitor -->
             <div class="col-md-3">
-                <a href="/Visitor-web/pages/checkin.php" class="text-decoration-none">
+                <a href="/Visitor-web/pages/registration.php" class="text-decoration-none">
                     <div class="card text-center shadow p-3 mb-4 bg-white rounded h-100">
                         <div class="card-body">
                             <i class="bi bi-person-plus display-4 text-primary mb-3"></i>

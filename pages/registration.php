@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include '../includes/auth.php';
 include '../includes/config.php';
 include '../includes/header.php';
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               VALUES ('$name', '$NoTelepon', '$Kegiatan', '$Perusahaan', '$fotoDiriPath', '$ktpPath')";
 
     if ($conn->query($query) === TRUE) {
-        header("Location: checkin.php?success=1");
+        header("Location: registration.php?success=1");
         exit();
     } else {
         echo "
@@ -60,13 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
     }
-}
-
-if (isset($_GET['success']) && $_GET['success'] == 1) {
-    echo "<div class='alert alert-success alert-dismissible fade show' role='alert' id='autoCloseAlert'>
-        Visitor berhasil Check-In!
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
 }
 ?>
 
@@ -80,12 +74,20 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
         }
     </style>
 
-</head>
+</head> 
 <div class="container mt-4 my-5 pt-2">
-    <h3 class="text-center py-4">Check-In Visitor</h3>
-    <!-- <hr class="flex-grow-1 border-3"> -->
-
-    <form method="post" enctype="multipart/form-data" class="my-5">
+<h3 class="text-center py-4">New Registration Visitor</h3>
+<div class="position-relative" style="height: 40px;">
+    <?php
+    if (isset($_GET['success']) && $_GET['success'] == 1) {
+        echo "<div class='alert alert-success alert-dismissible fade show top-20 start-50 translate-middle-x' role='alert' id='autoCloseAlert'>
+            Visitor berhasil Check-In!
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+    }
+    ?>
+</div>
+    <form method="post" enctype="multipart/form-data" class="my-4">
         <!-- Input Nama -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-primary text-white"><i class="bi bi-person-fill"></i></span>
@@ -216,7 +218,5 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
         bsAlert.close();
     }, 2000);
 </script>
-
-
-
 <?php include '../includes/footer.php'; ?>
+<?php ob_end_flush();

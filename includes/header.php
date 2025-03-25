@@ -1,7 +1,6 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -13,7 +12,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background-color: rgba(0, 123, 255, 0.64);
             color: rgb(255, 255, 255) !important;
             font-weight: bold;
-            border-radius: 50px;
+            border-radius: 10px;
             padding: 10px 12px !important;
         }
 
@@ -54,7 +53,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <?php if ($_SESSION['user']['role'] == 'admin'): ?>
                             <!-- Menu khusus admin -->
                             <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'checkin.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkin.php">Check-In</a>
+                                <a class="nav-link <?= $current_page == 'registration.php' ? 'active' : '' ?>" href="/Visitor-web/pages/registration.php">Registration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $current_page == 'Re-Check-In.php' ? 'active' : '' ?>" href="/Visitor-web/pages/Re-Check-In.php">Re-Check-In</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
@@ -63,21 +65,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
                             </li>
                         <?php endif; ?>
-
                         <!-- Logout untuk semua user -->
                         <li class="nav-item">
                             <a href="#" class="btn btn-danger text-white mx-2 p-2" data-bs-toggle="modal" data-bs-target="#logoutModal">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         </li>
-
                     <?php else: ?>
                         <!-- Jika belum login -->
                         <li class="nav-item">
                             <a class="nav-link" href="/Visitor-web/auth/login.php">Login</a>
                         </li>
                     <?php endif; ?>
-
                 </ul>
             </div>
         </div>
