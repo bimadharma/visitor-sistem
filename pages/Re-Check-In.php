@@ -48,15 +48,26 @@ if (isset($_GET['success'])) {
 }
 
 ?>
+
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        .select2-search__field {
+            padding-left: 30px !important;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/54/54481.png');
+            background-size: 16px 16px;
+            background-position: 10px center;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="card-header text-black text-center">
-            <h2>Re-Checkin Visitors</h2>
+            <h3>Re-Checkin Visitors</h3>
         </div>
         <div class="position-relative" style="height: 40px;">
             <?php if (isset($alert)) echo $alert; ?>
@@ -100,11 +111,36 @@ if (isset($_GET['success'])) {
 
     $(document).ready(function() {
         $('#visitorSelect').select2({
-            placeholder: "-- Pilih Nama --",
+            placeholder: "🔍 Mencari...",
             allowClear: true,
-            width: '100%'
+            width: '100%',
+            dropdownParent: $(".container"),
+            dropdownAutoWidth: true,
+            templateResult: formatVisitor,
+            templateSelection: formatVisitorSelection
         });
+
+        function formatVisitor(visitor) {
+            if (!visitor.id) {
+                return visitor.text;
+            }
+            var $visitor = $(
+                '<div style="display: flex; align-items: center;">' +
+                '<img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" style="width: 20px; height: 20px; margin-right: 10px; border-radius: 50%;">' +
+                '<span>' + visitor.text + '</span>' +
+                '</div>'
+            );
+            return $visitor;
+        }
+
+        function formatVisitorSelection(visitor) {
+            if (!visitor.id) {
+                return visitor.text;
+            }
+            return $('<span><i class="fas fa-user"></i> ' + visitor.text + '</span>');
+        }
     });
 </script>
+
 </html>
 <?php ob_end_flush();

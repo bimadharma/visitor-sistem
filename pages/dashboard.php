@@ -103,6 +103,7 @@ $still_in_count = $still_in->num_rows;
     <div class="container my-5">
         <div class="row">
             <h3 class="text-center mb-5">Mentoring Visitor Status</h3>
+
             <!-- Kolom Kiri -->
             <div class="col-md-6">
                 <h4 class="text-center">
@@ -111,19 +112,26 @@ $still_in_count = $still_in->num_rows;
                 </h4>
                 <table class="table table-bordered">
                     <tr>
+                        <th>Photo</th>
                         <th>Name</th>
                         <th>Check-in Time</th>
                     </tr>
                     <?php if ($today_count > 0): ?>
                         <?php while ($row = $today_visitors->fetch_assoc()): ?>
                             <tr>
-                                <td><?= $row['name'] ?></td>
-                                <td><?= date('j F Y H:i', strtotime($row['checkin_time'])) ?></td>
+                                <td class="text-center align-middle">
+                                    <img src="/Visitor-web/<?= htmlspecialchars($row['foto_diri']) ?>"
+                                        alt="Visitor Photo"
+                                        width="60" height="60"
+                                        style="object-fit: cover; border-radius: 50%;">
+                                </td>
+                                <td class="align-middle text-center"><?= htmlspecialchars($row['name']) ?></td>
+                                <td class="align-middle text-center"><?= date('j F Y H:i', strtotime($row['checkin_time'])) ?></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="2" class="text-center">No visitors today.</td>
+                            <td colspan="3" class="text-center">No visitors today.</td>
                         </tr>
                     <?php endif; ?>
                 </table>
@@ -137,19 +145,26 @@ $still_in_count = $still_in->num_rows;
                 </h4>
                 <table class="table table-bordered">
                     <tr>
+                        <th>Photo</th>
                         <th>Name</th>
                         <th>Check-in Time</th>
                     </tr>
                     <?php if ($still_in_count > 0): ?>
                         <?php while ($row = $still_in->fetch_assoc()): ?>
                             <tr>
-                                <td><?= $row['name'] ?></td>
-                                <td><?= date('j F Y H:i', strtotime($row['checkin_time'])) ?></td>
+                                <td class="text-center align-middle">
+                                    <img src="/Visitor-web/<?= htmlspecialchars($row['foto_diri']) ?>"
+                                        alt="Visitor Photo"
+                                        width="60" height="60"
+                                        style="object-fit: cover; border-radius: 50%;">
+                                </td>
+                                <td class="align-middle text-center"><?= htmlspecialchars($row['name']) ?></td>
+                                <td class="align-middle text-center"><?= date('j F Y H:i', strtotime($row['checkin_time'])) ?></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="2" class="text-center">No visitors inside.</td>
+                            <td colspan="3" class="text-center">No visitors inside.</td>
                         </tr>
                     <?php endif; ?>
                 </table>
