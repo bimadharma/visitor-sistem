@@ -35,17 +35,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // ====== FOTO KTP (File Upload) ======
     $ktpPath = null;
-    if (isset($_FILES['foto_ktp']) && $_FILES['foto_ktp']['error'] == 0) {
-        $folderKTP = __DIR__ . '/../assets/ktp/';
-        if (!file_exists($folderKTP)) {
-            mkdir($folderKTP, 0777, true);
+    // ====== FOTO KTP (File Upload atau Base64 Kamera) ======
+$ktpPath = null;
+$folderKTP = __DIR__ . '/../assets/ktp/';
+if (!file_exists($folderKTP)) {
+    mkdir($folderKTP, 0777, true);
+}
+
+// Jika pakai upload file biasa
+if (isset($_FILES['foto_ktp']) && $_FILES['foto_ktp']['error'] == 0) {
+    $fileKTP = $_FILES['foto_ktp'];
+    $ktpName = uniqid('ktp_', true) . '_' . basename($fileKTP['name']);
+    $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
+    move_uploaded_file($fileKTP['tmp_name'], $folderKTP . $ktpName);
+}
+// Jika pakai kamera (base64)
+elseif (!empty($_POST['foto_ktp_base64'])) {
+    $base64Image = $_POST['foto_ktp_base64'];
+
+    // Ambil bagian data:image/png;base64,....
+    if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+        $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+        $type = strtolower($type[1]); // png, jpg, jpeg
+
+        if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
+            die('Format gambar tidak didukung.');
         }
 
-        $fileKTP = $_FILES['foto_ktp'];
-        $ktpName = uniqid('ktp_', true) . '_' . basename($fileKTP['name']);
+        $base64Image = base64_decode($base64Image);
+        if ($base64Image === false) {
+            die('Gagal decode gambar.');
+        }
+
+        $ktpName = uniqid('ktp_', true) . '.' . $type;
+        file_put_contents($folderKTP . $ktpName, $base64Image);
         $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
-        move_uploaded_file($fileKTP['tmp_name'], $folderKTP . $ktpName);
     }
+}
+
 
     // ====== INSERT DATABASE ======
     $query = "INSERT INTO visitors (name, NoTelepon, Kegiatan, Perusahaan, foto_diri, foto_ktp) 
@@ -72,21 +99,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-weight: 500;
             padding: 10px;
         }
+
+        #ktpPreview {
+            width: 100%;
+            /* Gambar mengisi lebar kontainer */
+            height: 100%;
+            /* Gambar mengisi tinggi kontainer */
+            object-fit: cover;
+            /* Menjaga proporsi gambar dan mengisi seluruh area */
+            position: absolute;
+            /* Posisi absolut di dalam kontainer */
+            top: 0;
+            left: 0;
+            z-index: -1;
+            /* Membuat gambar berada di belakang teks dan ikon */
+        }
     </style>
 
-</head> 
+</head>
 <div class="container mt-4 my-5 pt-2">
-<h3 class="text-center py-4">New Registration Visitor</h3>
-<div class="position-relative" style="height: 40px;">
-    <?php
-    if (isset($_GET['success']) && $_GET['success'] == 1) {
-        echo "<div class='alert alert-success alert-dismissible fade show top-20 start-50 translate-middle-x' role='alert' id='autoCloseAlert'>
+    <h3 class="text-center py-4">New Registration Visitor</h3>
+    <div class="position-relative" style="height: 40px;">
+        <?php
+        if (isset($_GET['success']) && $_GET['success'] == 1) {
+            echo "<div class='alert alert-success alert-dismissible fade show top-20 start-50 translate-middle-x' role='alert' id='autoCloseAlert'>
             Visitor berhasil Check-In!
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-    }
-    ?>
-</div>
+        }
+        ?>
+    </div>
     <form method="post" enctype="multipart/form-data" class="my-4">
         <!-- Input Nama -->
         <div class="input-group mb-3">
@@ -97,126 +139,260 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Input No Telepon -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-primary text-white"><i class="bi bi-telephone-fill"></i></span>
-            <input type="number" name="NoTelepon" placeholder="No Telepon" class="form-control" required>
+            <input type="number" name="NoTelepon" placeholder="No Telepon" required class="form-control">
         </div>
 
         <!-- Input Kegiatan -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-primary text-white"><i class="bi bi-briefcase-fill"></i></span>
-            <input type="text" name="Kegiatan" placeholder="Kegiatan" class="form-control" required>
+            <input type="text" name="Kegiatan" placeholder="Kegiatan" required class="form-control">
         </div>
 
         <!-- Input Perusahaan -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-primary text-white"><i class="bi bi-building"></i></span>
-            <input type="text" name="Perusahaan" placeholder="Perusahaan" class="form-control" required>
+            <input type="text" name="Perusahaan" placeholder="Perusahaan" required class="form-control">
         </div>
 
-        <div class="row mb-4">
-            <!-- Kolom Kiri: Foto KTP -->
-            <div class="col-md-6 mb-3 text-center">
-                <label class="py-3"><strong>Foto KTP</strong></label>
-                <div class="border border-2 border-dark rounded-3 position-relative d-flex justify-content-center align-items-center mx-auto"
-                    style="cursor: pointer; width: 300px; height: 225px;">
-                    <div id="labelKTP" style="max-width: 100%; padding: 10px;">
-                        <i class="bi bi-upload fs-1 text-dark mb-2"></i>
-                        <p class="m-0 text-muted text-wrap" style="max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Klik untuk Upload KTP</p>
+        <div class="row">
+            <!-- KTP -->
+            <div class="col-md-6 mb-4 text-center">
+                <label class="form-label fw-bold">Foto KTP</label>
+                <div id="ktpContainer" class="border border-2 border-dark position-relative mx-auto rounded-3 overflow-hidden p-2" style="width:300px; height:auto;">
+
+                    <!-- Label Upload + Input File -->
+                    <div id="ktpUploadSection" class="w-100">
+                        <div class="position-relative w-100" style="height: 185px;">
+                            <input type="file" name="foto_ktp" id="fotoKTP" accept="image/*"
+                                class="form-control position-absolute w-100 h-100 opacity-0">
+                            <label for="fotoKTP" id="labelKTP"
+                                class="position-absolute w-100 h-100 d-flex flex-column justify-content-center align-items-center m-0"
+                                style="cursor: pointer;">
+                                <i class="bi bi-upload fs-1 text-dark"></i>
+                                <p class="text-muted">Klik untuk Upload KTP</p>
+                            </label>
+                            <img id="ktpPreview" src="" alt="Hasil Foto KTP"
+                                class="position-absolute w-100 h-100 object-fit-cover d-none">
+                        </div>
+                        <button type="button" id="ktpCameraBtn" class="btn btn-sm btn-secondary my-2">
+                            <i class="bi bi-camera-fill"></i> Gunakan Kamera
+                        </button>
                     </div>
-                    <input type="file" name="foto_ktp" id="fotoKTP" accept="image/*" required
-                        class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                        style="cursor: pointer;">
+
+                        <!-- Mode Kamera -->
+                        <div id="ktpCameraSection" class="d-none">
+                            <p class="text-muted mb-1">Mode Kamera</p>
+                            <video id="ktpVideo" width="100%" height="225" autoplay muted class="border rounded-3"></video>
+                            <img id="ktpPreviewFoto" src="" alt="Hasil Foto KTP" class="border rounded-3 mt-2 d-none" width="280" height="215">
+                            <canvas id="ktpCanvas" width="300" height="225" class="d-none"></canvas>
+                            <button type="button" id="ktpCaptureBtn" class="btn btn-success mt-2 w-100">Ambil Foto Sekarang</button>
+                            <button type="button" id="ktpRetakeBtn" class="btn bg-warning mt-2 w-100 d-none">Ulang Foto</button>
+                            <button type="button" id="ktpBackBtn" class="btn btn-outline-dark mt-2 w-100">Kembali ke Upload</button>
+                        </div>
+                    <input type="hidden" name="foto_ktp_base64" id="fotoKTPBase64">
                 </div>
             </div>
 
-            <!-- Kolom Kanan: Foto Diri Kamera -->
-            <div class="col-md-6 mb-3 text-center">
-                <label class="py-3"><strong>Foto Diri (Kamera Langsung)</strong></label><br>
-                <video id="video" width="300" height="225" autoplay muted class="border rounded-3 mb-2 d-none"></video>
-                <canvas id="canvas" width="300" height="225" class="d-none"></canvas>
-                <img id="photoPreview" src="" alt="Hasil Foto" class="border rounded-3 mb-2 d-none" width="300" height="225"><br>
-                <input type="hidden" name="foto_diri_base64" id="fotoDiriBase64">
-                <button type="button" id="cameraBtn" class="btn btn-primary mb-2">Aktifkan Kamera</button>
+            <!-- Foto Diri -->
+            <div class="col-md-6 mb-4 text-center">
+                <label class="form-label fw-bold">Foto Diri Anda</label>
+                <div id="diriContainer" class="border border-2 border-dark position-relative mx-auto rounded-3 overflow-hidden p-2" style="width:300px; height:auto;">
+                    <div id="diriCaptureSection" style="height: 225px; cursor: pointer;" class="position-relative w-100">
+                        <div class="position-absolute w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-camera-fill fs-1 text-dark"></i>
+                            <p class="text-muted">Klik Kamera untuk Ambil Foto</p>
+                        </div>
+                    </div>
+                    <video id="diriVideo" width="100%" height="225" autoplay muted class="border rounded-3 mt-2 d-none"></video>
+                    <canvas id="diriCanvas" width="300" height="225" class="d-none"></canvas>
+                    <img id="diriPreview" src="" alt="Hasil Foto Diri" class="border rounded-3 mt-2 d-none" width="280" height="215">
+                    <button type="button" id="diriCaptureBtn" class="btn btn-success mt-2 w-100 d-none">Ambil Foto Sekarang</button>
+                    <button type="button" id="diriRetakeBtn" class="btn bg-warning mt-2 w-100 d-none">Ulang Foto</button>
+                    <input type="hidden" name="foto_diri_base64" id="fotoDiriBase64">
+                </div>
             </div>
         </div>
-
 
         <!-- Tombol Submit -->
         <div class="text-center">
             <button type="submit" name="submit" class="btn btn-success w-50 py-3 my-2 rounded-pill">Check-In</button>
         </div>
 
-    </form>
-</div>
-<script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const cameraBtn = document.getElementById('cameraBtn');
-    const fotoDiriBase64 = document.getElementById('fotoDiriBase64');
-    const photoPreview = document.getElementById('photoPreview');
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                let ktpStream = null;
+                let diriStream = null;
 
-    let stream = null;
-    let isCameraActive = false;
+                const ktpRetakeBtn = document.getElementById("ktpRetakeBtn");
+                const fotoKTP = document.getElementById("fotoKTP");
+                const labelKTP = document.getElementById("labelKTP");
+                const ktpVideo = document.getElementById("ktpVideo");
+                const ktpCanvas = document.getElementById("ktpCanvas");
+                const ktpPreview = document.getElementById("ktpPreview");
+                const ktpPreviewFoto = document.getElementById("ktpPreviewFoto");
+                const fotoKTPBase64 = document.getElementById("fotoKTPBase64");
+                const ktpCameraBtn = document.getElementById("ktpCameraBtn");
+                const ktpCaptureBtn = document.getElementById("ktpCaptureBtn");
+                const ktpBackBtn = document.getElementById("ktpBackBtn");
+                const ktpUploadSection = document.getElementById("ktpUploadSection");
+                const ktpCameraSection = document.getElementById("ktpCameraSection");
 
-    async function startCamera() {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: true
+                const diriVideo = document.getElementById("diriVideo");
+                const diriCanvas = document.getElementById("diriCanvas");
+                const diriPreview = document.getElementById("diriPreview");
+                const fotoDiriBase64 = document.getElementById("fotoDiriBase64");
+                const diriCaptureSection = document.getElementById("diriCaptureSection");
+                const diriCaptureBtn = document.getElementById("diriCaptureBtn");
+                const diriRetakeBtn = document.getElementById("diriRetakeBtn");
+
+                // ========= KTP =========
+                fotoKTP.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            ktpPreview.src = event.target.result;
+                            ktpPreview.classList.remove("d-none");
+                            fotoKTPBase64.value = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                ktpCameraBtn.addEventListener("click", async () => {
+                    if (ktpStream) stopStream(ktpStream);
+                    try {
+                        ktpStream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        ktpVideo.srcObject = ktpStream;
+                        ktpUploadSection.classList.add("d-none");
+                        ktpCameraSection.classList.remove("d-none");
+                    } catch (err) {
+                        alert("Tidak dapat mengakses kamera.");
+                    }
+                });
+
+                let sudahAmbilKTP = false;
+
+                ktpCaptureBtn.addEventListener("click", async function() {
+                    if (!sudahAmbilKTP) {
+                        ktpCanvas.getContext('2d').drawImage(ktpVideo, 0, 0, 300, 225);
+                        const imageData = ktpCanvas.toDataURL("image/png");
+
+                        ktpPreviewFoto.src = imageData;
+                        ktpPreviewFoto.classList.remove("d-none");
+                        fotoKTPBase64.value = imageData;
+                        
+                        ktpVideo.classList.add("d-none");
+                        ktpCaptureBtn.innerText = "Ulang Foto";
+                        ktpCaptureBtn.classList.replace("btn-success", "btn-warning");
+
+                        sudahAmbilKTP = true;
+                        stopStream(ktpStream);
+                    } else {
+                        try {
+                            ktpStream = await navigator.mediaDevices.getUserMedia({
+                                video: true
+                            });
+                            ktpVideo.srcObject = ktpStream;
+
+                            ktpPreviewFoto.classList.add("d-none");
+                            ktpVideo.classList.remove("d-none");
+
+                            ktpCaptureBtn.innerText = "Ambil Foto Sekarang";
+                            ktpCaptureBtn.classList.replace("btn-warning", "btn-success");
+
+                            sudahAmbilKTP = false;
+                        } catch (err) {
+                            alert("Tidak dapat mengakses kamera.");
+                        }
+                    }
+                });
+
+
+
+                ktpRetakeBtn.addEventListener("click", async () => {
+                    if (ktpStream) stopStream(ktpStream);
+                    try {
+                        ktpStream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        ktpVideo.srcObject = ktpStream;
+                        ktpVideo.classList.remove("d-none");
+                        ktpPreviewFoto.classList.add("d-none");
+                        ktpCaptureBtn.classList.remove("d-none");
+                        ktpRetakeBtn.classList.add("d-none");
+                    } catch (err) {
+                        alert("Tidak dapat mengakses kamera.");
+                    }
+                });
+
+
+                ktpBackBtn.addEventListener("click", () => {
+                    stopStream(ktpStream);
+                    ktpCameraSection.classList.add("d-none");
+                    ktpUploadSection.classList.remove("d-none");
+                    ktpVideo.classList.remove("d-none");
+                });
+
+                // ========= foto Diri =========
+                diriCaptureSection.addEventListener("click", async () => {
+                    if (diriStream) stopStream(diriStream);
+                    try {
+                        diriStream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        diriVideo.srcObject = diriStream;
+                        diriVideo.classList.remove("d-none");
+                        diriPreview.classList.add("d-none");
+                        diriCaptureSection.classList.add("d-none");
+                        diriCaptureBtn.classList.remove("d-none");
+                        diriRetakeBtn.classList.add("d-none");
+                    } catch (err) {
+                        alert("Tidak dapat mengakses kamera.");
+                    }
+                });
+
+                diriCaptureBtn.addEventListener("click", () => {
+                    diriCanvas.getContext('2d').drawImage(diriVideo, 0, 0, 300, 225);
+                    const imageData = diriCanvas.toDataURL("image/png");
+                    diriPreview.src = imageData;
+                    diriPreview.classList.remove("d-none");
+                    fotoDiriBase64.value = imageData;
+
+                    diriVideo.classList.add("d-none");
+                    diriCaptureBtn.classList.add("d-none");
+                    diriRetakeBtn.classList.remove("d-none");
+
+                    stopStream(diriStream);
+                });
+
+                diriRetakeBtn.addEventListener("click", async () => {
+                    if (diriStream) stopStream(diriStream);
+                    try {
+                        diriStream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        diriVideo.srcObject = diriStream;
+                        diriVideo.classList.remove("d-none");
+                        diriPreview.classList.add("d-none");
+                        diriCaptureBtn.classList.remove("d-none");
+                        diriRetakeBtn.classList.add("d-none");
+                    } catch (err) {
+                        alert("Tidak dapat mengakses kamera.");
+                    }
+                });
+
+                function stopStream(stream) {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                }
             });
-            video.srcObject = stream;
-            video.classList.remove('d-none');
-            photoPreview.classList.add('d-none');
-            cameraBtn.textContent = "Ambil Foto";
-            isCameraActive = true;
-        } catch (error) {
-            alert('Tidak dapat mengakses kamera: ' + error.message);
-        }
-    }
+        </script>
 
-    function stopCamera() {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        video.classList.add('d-none');
-        isCameraActive = false;
-    }
 
-    cameraBtn.addEventListener('click', function() {
-        if (!isCameraActive) {
-            startCamera();
-        } else {
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageData = canvas.toDataURL('image/png');
-            fotoDiriBase64.value = imageData;
-            photoPreview.src = imageData;
-            photoPreview.classList.remove('d-none');
 
-            stopCamera();
-            cameraBtn.textContent = "Aktifkan Kamera";
-        }
-    });
-
-    //KTP verifikasi nama file
-    // Menangkap input file
-    const inputKTP = document.getElementById('fotoKTP');
-    const labelKTP = document.getElementById('labelKTP');
-
-    // Event saat file dipilih
-    inputKTP.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const fileName = this.files[0].name;
-            labelKTP.innerHTML = `
-            <i class="bi bi-file-earmark-image fs-1 text-success mb-2"></i>
-            <p class="m-0 text-dark" style="max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${fileName}</p>
-        `;
-        }
-    });
-
-    setTimeout(function() {
-        var alert = document.getElementById('autoCloseAlert');
-        var bsAlert = new bootstrap.Alert(alert);
-        bsAlert.close();
-    }, 2000);
-</script>
-<?php include '../includes/footer.php'; ?>
-<?php ob_end_flush();
+        <?php include '../includes/footer.php'; ?>
+        <?php ob_end_flush();
