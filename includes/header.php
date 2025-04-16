@@ -4,6 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <html>
 
 <head>
+    <meta name="viewport" content="width=divace-width, initial-scale=1.0">
     <title>Visitor App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/Visitor-web/assets/css/bootstrap.min.css">
@@ -31,6 +32,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
         body.modal-open {
             padding: 0 !important;
         }
+
+        .logo-navbar {
+            height: 40px;
+        }
+
+        @media (max-width: 576px) {
+            .logo-navbar {
+                height: 30px;
+            }
+        }
     </style>
     <link href="/Visitor-web/assets/img/logo-eximbank.png" rel="shortcut icon">
 </head>
@@ -38,8 +49,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-3 shadow">
         <div class="container-fluid">
-            <a class="navbar-brand p-2" href="/Visitor-web/pages/dashboard.php">
-                <img src="/Visitor-web/assets/img/logo.png" alt="Visitor App Logo" height="40" class="d-inline-block align-text-top">
+            <a class="navbar-brand" href="/Visitor-web/pages/dashboard.php">
+                <img src="/Visitor-web/assets/img/logo.png" alt="Visitor App Logo" height="40" class="logo-navbar d-inline-block align-text-top">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

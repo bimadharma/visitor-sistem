@@ -7,8 +7,8 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-// Auto logout setelah 10 menit tidak aktif
-if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 600)) { 
+// Auto logout setelah 20 menit tidak aktif
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1200)) { 
     session_unset();  
     session_destroy();  
     header("Location: /Visitor-web/auth/login.php");

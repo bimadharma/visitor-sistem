@@ -78,7 +78,6 @@ if (isset($_GET['success'])) {
                     <div class="mb-3">
                         <label class="form-label">Pilih Nama Pengunjung:</label>
                         <select class="form-select" name="visitor_id" id="visitorSelect" required>
-                            <option value="">-- Pilih Nama --</option>
                             <?php while ($row = $result->fetch_assoc()) { ?>
                                 <option value="<?= htmlspecialchars($row['id']); ?>">
                                     <?= htmlspecialchars($row['name']); ?>
