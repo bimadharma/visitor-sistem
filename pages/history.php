@@ -16,77 +16,109 @@
             <div id="customSearch" class="mb-3"></div>
 
             <!-- Tombol Download & Filter -->
-            <div class="d-flex justify-content-between mb-3">
+            <!-- Tombol Filter -->
+            <div class="d-flex justify-content-between mb-3 align-items-center">
                 <a href="export_history.php" class="btn btn-primary">
                     <i class="bi bi-download"></i> Download History
                 </a>
 
+                <!-- Trigger Modal -->
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#dateFilterModal">
+                    <i class="bi bi-calendar"></i> Filter Tanggal
+                </button>
             </div>
 
+            <!-- Modal Filter Tanggal -->
+            <div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="dateFilterModalLabel">Filter Berdasarkan Tanggal</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Mulai Tanggal</label>
+                                <input type="date" id="startDate" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">Sampai Tanggal</label>
+                                <input type="date" id="endDate" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" id="resetFilterBtn">Reset</button>
+                            <button class="btn btn-success" onclick="applyDateFilter()">Terapkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Tambahkan Kolom Aksi di Tabel -->
-             <div class="table-responsive">
-            <table id="visitorTable" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Name</th>
-                        <th>No.Telepon</th>
-                        <th>Kegiatan</th>
-                        <th>Perusahaan</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $no = 1;
-                    while ($row = $history->fetch_assoc()): ?>
+            <div class="table-responsive">
+                <table id="visitorTable" class="table table-bordered table-striped">
+                    <thead>
                         <tr>
-                            <td><?= $no++ ?></td>
-                            <td><?= $row['name'] ?></td>
-                            <td><?= $row['NoTelepon'] ?></td>
-                            <td><?= $row['Kegiatan'] ?></td>
-                            <td><?= $row['Perusahaan'] ?></td>
-                            <td><?= !empty($row['checkin_time']) ? date('d F Y H:i', strtotime($row['checkin_time'])) : '' ?></td>
-                            <td><?= !empty($row['checkout_time']) ? date('d F Y H:i', strtotime($row['checkout_time'])) : '' ?></td>
-
-                            <td>
-                                <button class="btn btn-info btn-sm viewDetail"
-                                    data-name="<?= $row['name'] ?>"
-                                    data-telepon="<?= $row['NoTelepon'] ?>"
-                                    data-kegiatan="<?= $row['Kegiatan'] ?>"
-                                    data-perusahaan="<?= $row['Perusahaan'] ?>"
-                                    data-foto_diri="<?= $row['foto_diri'] ?>"
-                                    data-foto_ktp="<?= $row['foto_ktp'] ?>"
-                                    data-checkin="<?= $row['checkin_time'] ?>"
-                                    data-checkout="<?= $row['checkout_time'] ?>"
-                                    data-bs-toggle="modal" data-bs-target="#viewModal">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-warning btn-sm editVisitor"
-                                    data-id="<?= $row['id'] ?>"
-                                    data-name="<?= $row['name'] ?>"
-                                    data-telepon="<?= $row['NoTelepon'] ?>"
-                                    data-kegiatan="<?= $row['Kegiatan'] ?>"
-                                    data-perusahaan="<?= $row['Perusahaan'] ?>"
-                                    data-checkin="<?= $row['checkin_time'] ?>"
-                                    data-checkout="<?= $row['checkout_time'] ?>"
-                                    data-bs-toggle="modal" data-bs-target="#editModal">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
-                                <button class="btn btn-danger btn-sm deleteVisitor"
-                                    data-id="<?= $row['id'] ?>"
-                                    data-name="<?= $row['name'] ?>"
-                                    data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>No.Telepon</th>
+                            <th>Kegiatan</th>
+                            <th>Perusahaan</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Aksi</th>
                         </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $no = 1;
+                        while ($row = $history->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= $row['name'] ?></td>
+                                <td><?= $row['NoTelepon'] ?></td>
+                                <td><?= $row['Kegiatan'] ?></td>
+                                <td><?= $row['Perusahaan'] ?></td>
+                                <td><?= !empty($row['checkin_time']) ? date('d F Y H:i', strtotime($row['checkin_time'])) : '' ?></td>
+                                <td><?= !empty($row['checkout_time']) ? date('d F Y H:i', strtotime($row['checkout_time'])) : '' ?></td>
+
+                                <td>
+                                    <button class="btn btn-info btn-sm viewDetail"
+                                        data-name="<?= $row['name'] ?>"
+                                        data-telepon="<?= $row['NoTelepon'] ?>"
+                                        data-kegiatan="<?= $row['Kegiatan'] ?>"
+                                        data-perusahaan="<?= $row['Perusahaan'] ?>"
+                                        data-foto_diri="<?= $row['foto_diri'] ?>"
+                                        data-foto_ktp="<?= $row['foto_ktp'] ?>"
+                                        data-checkin="<?= $row['checkin_time'] ?>"
+                                        data-checkout="<?= $row['checkout_time'] ?>"
+                                        data-bs-toggle="modal" data-bs-target="#viewModal">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-warning btn-sm editVisitor"
+                                        data-id="<?= $row['id'] ?>"
+                                        data-name="<?= $row['name'] ?>"
+                                        data-telepon="<?= $row['NoTelepon'] ?>"
+                                        data-kegiatan="<?= $row['Kegiatan'] ?>"
+                                        data-perusahaan="<?= $row['Perusahaan'] ?>"
+                                        data-checkin="<?= $row['checkin_time'] ?>"
+                                        data-checkout="<?= $row['checkout_time'] ?>"
+                                        data-bs-toggle="modal" data-bs-target="#editModal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+
+                                    <button class="btn btn-danger btn-sm deleteVisitor"
+                                        data-id="<?= $row['id'] ?>"
+                                        data-name="<?= $row['name'] ?>"
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Modal View Detail -->
@@ -271,5 +303,60 @@
                     $('#deleteId').val($(this).data('id'));
                     $('#deleteName').text($(this).data('name'));
                 });
+            });
+        </script>
+        <script>
+            $(document).ready(function() {
+                const table = $('#visitorTable').DataTable();
+
+                // Fungsi Terapkan Filter
+                window.applyDateFilter = function() {
+                    const start = $('#startDate').val();
+                    const end = $('#endDate').val();
+
+                    if (start && end) {
+                        const startDate = new Date(start).getTime();
+                        const endDate = new Date(end + "T23:59:59").getTime();
+
+                        $.fn.dataTable.ext.search = []; // Bersihkan filter sebelumnya
+
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const checkinStr = data[5]; // Sesuaikan indeks kolom tanggal check-in
+                            if (!checkinStr) return false;
+
+                            const parts = checkinStr.split(" ");
+                            const day = parts[0];
+                            const month = new Date(Date.parse(parts[1] + " 1, 2020")).getMonth();
+                            const year = parts[2];
+                            const time = parts[3];
+                            const fullDateStr = `${year}-${month + 1}-${day} ${time}`;
+                            const checkinDate = new Date(fullDateStr).getTime();
+
+                            return checkinDate >= startDate && checkinDate <= endDate;
+                        });
+
+                        table.draw();
+                        $('#dateFilterModal').modal('hide'); // Menutup modal
+                        removeModalBackdrop(); // Menghapus backdrop
+                    } else {
+                        alert("Mohon pilih tanggal mulai dan akhir.");
+                    }
+                };
+
+                // Reset Filter
+                $('#resetFilterBtn').on('click', function() {
+                    $('#startDate').val('');
+                    $('#endDate').val('');
+                    $.fn.dataTable.ext.search = [];
+                    table.draw();
+                    $('#dateFilterModal').modal('hide'); // Menutup modal
+                    removeModalBackdrop(); // Menghapus backdrop
+                });
+
+                // Fungsi untuk menghapus backdrop modal
+                function removeModalBackdrop() {
+                    // Menghapus elemen backdrop setelah modal ditutup
+                    $('.modal-backdrop').remove();
+                }
             });
         </script>

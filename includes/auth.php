@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Jika tidak ada sesi user atau bukan admin, redirect ke login
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+// Jika tidak ada sesi user, redirect ke login
+if (!isset($_SESSION['user'])) {
     header("Location: /Visitor-web/auth/login.php");
     exit;
 }

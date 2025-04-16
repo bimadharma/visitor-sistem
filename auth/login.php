@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
 
     // Gunakan prepared statement untuk menghindari SQL Injection
-    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
     $stmt->bind_param("s", $username); // "s" berarti string
     $stmt->execute();
     $result = $stmt->get_result();
@@ -23,14 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user'] = [
-            'username' => $user['username'],
-            'role' => $user['role']
+            'username' => $user['username']
         ];
         $_SESSION['LAST_ACTIVITY'] = time();
         header("Location: ../pages/dashboard.php");
         exit;
-    }
-    else {
+    } else {
         $error = "Username atau password salah.";
     }
 }

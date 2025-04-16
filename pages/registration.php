@@ -33,45 +33,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         file_put_contents($folderFoto . $fotoDiriName, $fotoData);
     }
 
-    // ====== FOTO KTP (File Upload) ======
     $ktpPath = null;
     // ====== FOTO KTP (File Upload atau Base64 Kamera) ======
-$ktpPath = null;
-$folderKTP = __DIR__ . '/../assets/ktp/';
-if (!file_exists($folderKTP)) {
-    mkdir($folderKTP, 0777, true);
-}
-
-// Jika pakai upload file biasa
-if (isset($_FILES['foto_ktp']) && $_FILES['foto_ktp']['error'] == 0) {
-    $fileKTP = $_FILES['foto_ktp'];
-    $ktpName = uniqid('ktp_', true) . '_' . basename($fileKTP['name']);
-    $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
-    move_uploaded_file($fileKTP['tmp_name'], $folderKTP . $ktpName);
-}
-// Jika pakai kamera (base64)
-elseif (!empty($_POST['foto_ktp_base64'])) {
-    $base64Image = $_POST['foto_ktp_base64'];
-
-    // Ambil bagian data:image/png;base64,....
-    if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-        $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
-        $type = strtolower($type[1]); // png, jpg, jpeg
-
-        if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
-            die('Format gambar tidak didukung.');
-        }
-
-        $base64Image = base64_decode($base64Image);
-        if ($base64Image === false) {
-            die('Gagal decode gambar.');
-        }
-
-        $ktpName = uniqid('ktp_', true) . '.' . $type;
-        file_put_contents($folderKTP . $ktpName, $base64Image);
-        $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
+    $ktpPath = null;
+    $folderKTP = __DIR__ . '/../assets/ktp/';
+    if (!file_exists($folderKTP)) {
+        mkdir($folderKTP, 0777, true);
     }
-}
+
+    // Jika pakai upload file biasa
+    if (isset($_FILES['foto_ktp']) && $_FILES['foto_ktp']['error'] == 0) {
+        $fileKTP = $_FILES['foto_ktp'];
+        $ktpName = uniqid('ktp_', true) . '_' . basename($fileKTP['name']);
+        $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
+        move_uploaded_file($fileKTP['tmp_name'], $folderKTP . $ktpName);
+    }
+    // Jika pakai kamera (base64)
+    elseif (!empty($_POST['foto_ktp_base64'])) {
+        $base64Image = $_POST['foto_ktp_base64'];
+
+        // Ambil bagian data:image/png;base64,....
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // png, jpg, jpeg
+
+            if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
+                die('Format gambar tidak didukung.');
+            }
+
+            $base64Image = base64_decode($base64Image);
+            if ($base64Image === false) {
+                die('Gagal decode gambar.');
+            }
+
+            $ktpName = uniqid('ktp_', true) . '.' . $type;
+            file_put_contents($folderKTP . $ktpName, $base64Image);
+            $ktpPath = 'assets/ktp/' . $ktpName; // Path untuk disimpan di DB
+        }
+    }
 
 
     // ====== INSERT DATABASE ======
@@ -179,16 +178,16 @@ elseif (!empty($_POST['foto_ktp_base64'])) {
                         </button>
                     </div>
 
-                        <!-- Mode Kamera -->
-                        <div id="ktpCameraSection" class="d-none">
-                            <p class="text-muted mb-1">Mode Kamera</p>
-                            <video id="ktpVideo" width="100%" height="225" autoplay muted class="border rounded-3"></video>
-                            <img id="ktpPreviewFoto" src="" alt="Hasil Foto KTP" class="border rounded-3 mt-2 d-none" width="280" height="215">
-                            <canvas id="ktpCanvas" width="300" height="225" class="d-none"></canvas>
-                            <button type="button" id="ktpCaptureBtn" class="btn btn-success mt-2 w-100">Ambil Foto Sekarang</button>
-                            <button type="button" id="ktpRetakeBtn" class="btn bg-warning mt-2 w-100 d-none">Ulang Foto</button>
-                            <button type="button" id="ktpBackBtn" class="btn btn-outline-dark mt-2 w-100">Kembali ke Upload</button>
-                        </div>
+                    <!-- Mode Kamera -->
+                    <div id="ktpCameraSection" class="d-none">
+                        <p class="text-muted mb-1">Mode Kamera</p>
+                        <video id="ktpVideo" width="100%" height="225" autoplay muted class="border rounded-3"></video>
+                        <img id="ktpPreviewFoto" src="" alt="Hasil Foto KTP" class="border rounded-3 mt-2 d-none" width="280" height="215">
+                        <canvas id="ktpCanvas" width="300" height="225" class="d-none"></canvas>
+                        <button type="button" id="ktpCaptureBtn" class="btn btn-success mt-2 w-100">Ambil Foto Sekarang</button>
+                        <button type="button" id="ktpRetakeBtn" class="btn bg-warning mt-2 w-100 d-none">Ulang Foto</button>
+                        <button type="button" id="ktpBackBtn" class="btn btn-outline-dark mt-2 w-100">Kembali ke Upload</button>
+                    </div>
                     <input type="hidden" name="foto_ktp_base64" id="fotoKTPBase64">
                 </div>
             </div>
@@ -260,6 +259,12 @@ elseif (!empty($_POST['foto_ktp_base64'])) {
                 });
 
                 ktpCameraBtn.addEventListener("click", async () => {
+                    // Hapus hasil upload jika sebelumnya sudah upload
+                    ktpPreview.src = "";
+                    ktpPreview.classList.add("d-none");
+                    fotoKTPBase64.value = "";
+                    fotoKTP.value = ""; // reset input file
+
                     if (ktpStream) stopStream(ktpStream);
                     try {
                         ktpStream = await navigator.mediaDevices.getUserMedia({
@@ -283,7 +288,7 @@ elseif (!empty($_POST['foto_ktp_base64'])) {
                         ktpPreviewFoto.src = imageData;
                         ktpPreviewFoto.classList.remove("d-none");
                         fotoKTPBase64.value = imageData;
-                        
+
                         ktpVideo.classList.add("d-none");
                         ktpCaptureBtn.innerText = "Ulang Foto";
                         ktpCaptureBtn.classList.replace("btn-success", "btn-warning");
@@ -331,6 +336,15 @@ elseif (!empty($_POST['foto_ktp_base64'])) {
 
                 ktpBackBtn.addEventListener("click", () => {
                     stopStream(ktpStream);
+
+                    // Hapus hasil kamera jika sebelumnya pakai kamera
+                    ktpPreviewFoto.src = "";
+                    ktpPreviewFoto.classList.add("d-none");
+                    fotoKTPBase64.value = "";
+                    ktpCaptureBtn.innerText = "Ambil Foto Sekarang";
+                    ktpCaptureBtn.classList.replace("btn-warning", "btn-success");
+                    sudahAmbilKTP = false;
+
                     ktpCameraSection.classList.add("d-none");
                     ktpUploadSection.classList.remove("d-none");
                     ktpVideo.classList.remove("d-none");

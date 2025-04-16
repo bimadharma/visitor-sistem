@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 27, 2025 at 04:26 AM
+-- Generation Time: Apr 16, 2025 at 02:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -30,18 +30,16 @@ SET time_zone = "+00:00";
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('admin','user') NOT NULL
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
-(1, 'admin', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6', 'admin'),
-(3, 'bimbim', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6', 'admin'),
-(4, 'bayu', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6', 'user');
+INSERT INTO `users` (`id`, `username`, `password`) VALUES
+(1, 'admin', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6'),
+(3, 'bimbim', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6');
 
 -- --------------------------------------------------------
 
@@ -92,7 +90,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `visitors`
 --
 ALTER TABLE `visitors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -49,22 +49,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'dashboard.php' ? 'active' : '' ?>" href="/Visitor-web/pages/dashboard.php">Dashboard</a>
                     </li>
-                    <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role'])): ?>
-                        <?php if ($_SESSION['user']['role'] == 'admin'): ?>
-                            <!-- Menu khusus admin -->
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'registration.php' ? 'active' : '' ?>" href="/Visitor-web/pages/registration.php">Registration</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'Re-Check-In.php' ? 'active' : '' ?>" href="/Visitor-web/pages/Re-Check-In.php">Re-Check-In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
-                            </li>
-                        <?php endif; ?>
+
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <!-- Menu yang ditampilkan setelah login (bisa untuk semua user) -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'registration.php' ? 'active' : '' ?>" href="/Visitor-web/pages/registration.php">Registration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'Re-Check-In.php' ? 'active' : '' ?>" href="/Visitor-web/pages/Re-Check-In.php">Re-Check-In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
+                        </li>
+
                         <!-- Logout untuk semua user -->
                         <li class="nav-item">
                             <a href="#" class="btn btn-danger text-white mx-2 p-2" data-bs-toggle="modal" data-bs-target="#logoutModal">
