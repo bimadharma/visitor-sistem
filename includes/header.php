@@ -6,8 +6,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta name="viewport" content="width=divace-width, initial-scale=1.0">
     <title>Visitor App</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/Visitor-web/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/Visitor-web/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Visitor-web/assets/js/datatables.min.css">
+    <link rel="stylesheet" href="/Visitor-web/assets/js/dataTables.bootstrap5.min.css">
+
+    <script src="/Visitor-web/assets/js/jquery-3.7.1.min.js"></script>
+    <script src="/Visitor-web/assets/js/jquery.dataTables.min.js"></script>
+    <script src="/Visitor-web/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/Visitor-web/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/Visitor-web/assets/js/datatables.js"></script>
     <style>
         .nav-link.active {
             background-color: rgba(0, 123, 255, 0.64);
@@ -35,6 +43,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .logo-navbar {
             height: 40px;
+        }
+
+        #visitorTable {
+            font-size: 0.8rem;
+        }
+
+        .action-buttons .btn {
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            white-space: nowrap;
         }
 
         @media (max-width: 576px) {
@@ -109,5 +135,3 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

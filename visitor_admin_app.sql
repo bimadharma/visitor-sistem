@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 16, 2025 at 02:53 AM
+-- Generation Time: Apr 24, 2025 at 11:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -38,8 +38,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`) VALUES
-(1, 'admin', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6'),
-(3, 'bimbim', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6');
+(1, 'admin', '$2y$10$.MW/kapsrdEJX.5UI3BdFOD2fdh7rzyy/Zs/hSBZcWMwe8wBfQ.J6');
 
 -- --------------------------------------------------------
 
@@ -53,6 +52,8 @@ CREATE TABLE `visitors` (
   `NoTelepon` varchar(50) DEFAULT NULL,
   `Kegiatan` varchar(100) DEFAULT NULL,
   `Perusahaan` varchar(50) NOT NULL,
+  `PIC` text NOT NULL,
+  `Ticket` varchar(255) NOT NULL,
   `foto_diri` varchar(1000) NOT NULL,
   `foto_ktp` varchar(1000) NOT NULL,
   `checkin_time` datetime DEFAULT current_timestamp(),
@@ -90,7 +91,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `visitors`
 --
 ALTER TABLE `visitors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=198;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

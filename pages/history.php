@@ -7,8 +7,6 @@
     ?>
 
     <!-- Tambahkan CSS DataTables dan Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <div class="container mt-4 my-5 pt-2">
         <h3 class="text-center py-4">Visitor History</h3>
         <div class="container">
@@ -18,7 +16,7 @@
             <!-- Tombol Download & Filter -->
             <!-- Tombol Filter -->
             <div class="d-flex justify-content-between mb-3 align-items-center">
-                <a href="export_history.php" class="btn btn-primary">
+                <a href="export_history.php" id="downloadBtn" class="btn btn-primary">
                     <i class="bi bi-download"></i> Download History
                 </a>
 
@@ -56,8 +54,8 @@
 
 
             <!-- Tambahkan Kolom Aksi di Tabel -->
-            <div class="table-responsive">
-                <table id="visitorTable" class="table table-bordered table-striped">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="visitorTable" class="table table-bordered table-striped" style="min-width: 900px;">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -65,6 +63,8 @@
                             <th>No.Telepon</th>
                             <th>Kegiatan</th>
                             <th>Perusahaan</th>
+                            <th>PIC</th>
+                            <th>Ticket</th>
                             <th>Check-in</th>
                             <th>Check-out</th>
                             <th>Aksi</th>
@@ -80,15 +80,19 @@
                                 <td><?= $row['NoTelepon'] ?></td>
                                 <td><?= $row['Kegiatan'] ?></td>
                                 <td><?= $row['Perusahaan'] ?></td>
+                                <td><?= $row['PIC'] ?></td>
+                                <td><?= $row['Ticket'] ?></td>
                                 <td><?= !empty($row['checkin_time']) ? date('d F Y H:i', strtotime($row['checkin_time'])) : '' ?></td>
                                 <td><?= !empty($row['checkout_time']) ? date('d F Y H:i', strtotime($row['checkout_time'])) : '' ?></td>
 
-                                <td>
+                                <td class="action-buttons">
                                     <button class="btn btn-info btn-sm viewDetail"
                                         data-name="<?= $row['name'] ?>"
                                         data-telepon="<?= $row['NoTelepon'] ?>"
                                         data-kegiatan="<?= $row['Kegiatan'] ?>"
                                         data-perusahaan="<?= $row['Perusahaan'] ?>"
+                                        data-pic="<?= $row['PIC'] ?>"
+                                        data-ticket="<?= $row['Ticket'] ?>"
                                         data-foto_diri="<?= $row['foto_diri'] ?>"
                                         data-foto_ktp="<?= $row['foto_ktp'] ?>"
                                         data-checkin="<?= $row['checkin_time'] ?>"
@@ -146,6 +150,14 @@
                                 <div class="row mb-2">
                                     <div class="col-4 fw-bold text-secondary">Perusahaan:</div>
                                     <div class="col-8 fw-bold" id="modalPerusahaan"></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 fw-bold text-secondary">PIC:</div>
+                                    <div class="col-8 fw-bold" id="modalPIC"></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 fw-bold text-secondary">Ticket</div>
+                                    <div class="col-8 fw-bold" id="modalticket"></div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-4 fw-bold text-secondary">Check-in:</div>
@@ -234,12 +246,7 @@
 
 
 
-        <!-- DataTables JS + CSS -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- DataTables-->
         <script>
             $(document).ready(function() {
                 $('.viewDetail').on('click', function() {
@@ -247,6 +254,8 @@
                     $('#modalTelepon').text($(this).data('telepon'));
                     $('#modalKegiatan').text($(this).data('kegiatan'));
                     $('#modalPerusahaan').text($(this).data('perusahaan'));
+                    $('#modalPIC').text($(this).data('pic'));
+                    $('#modalticket').text($(this).data('ticket'));
                     $('#modalCheckin').text($(this).data('checkin'));
                     $('#modalCheckout').text($(this).data('checkout'));
 
@@ -315,13 +324,17 @@
                     const end = $('#endDate').val();
 
                     if (start && end) {
-                        const startDate = new Date(start).getTime();
-                        const endDate = new Date(end + "T23:59:59").getTime();
+                        const startDate = new Date(start);
+                        const endDate = new Date(end);
 
-                        $.fn.dataTable.ext.search = []; // Bersihkan filter sebelumnya
+                        // Formatkan tanggal menjadi 'YYYY-MM-DD'
+                        const formattedStartDate = startDate.toISOString().split('T')[0]; // Mengambil hanya bagian tanggal
+                        const formattedEndDate = endDate.toISOString().split('T')[0]; // Mengambil hanya bagian tanggal
 
+                        // Filter untuk DataTable
+                        $.fn.dataTable.ext.search = [];
                         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                            const checkinStr = data[5]; // Sesuaikan indeks kolom tanggal check-in
+                            const checkinStr = data[7]; // Indeks kolom Check-in Time
                             if (!checkinStr) return false;
 
                             const parts = checkinStr.split(" ");
@@ -330,14 +343,19 @@
                             const year = parts[2];
                             const time = parts[3];
                             const fullDateStr = `${year}-${month + 1}-${day} ${time}`;
-                            const checkinDate = new Date(fullDateStr).getTime();
+                            const checkinDate = new Date(fullDateStr).toISOString().split('T')[0]; 
 
-                            return checkinDate >= startDate && checkinDate <= endDate;
+                            return checkinDate >= formattedStartDate && checkinDate <= formattedEndDate;
                         });
 
                         table.draw();
-                        $('#dateFilterModal').modal('hide'); // Menutup modal
-                        removeModalBackdrop(); // Menghapus backdrop
+
+                        // Update URL untuk filter unduhan CSV
+                        const downloadLink = `export_history.php?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+                        $('#downloadBtn').attr('href', downloadLink); 
+
+                        $('#dateFilterModal').modal('hide'); 
+                        removeModalBackdrop(); 
                     } else {
                         alert("Mohon pilih tanggal mulai dan akhir.");
                     }
@@ -345,17 +363,21 @@
 
                 // Reset Filter
                 $('#resetFilterBtn').on('click', function() {
-                    $('#startDate').val('');
-                    $('#endDate').val('');
-                    $.fn.dataTable.ext.search = [];
-                    table.draw();
-                    $('#dateFilterModal').modal('hide'); // Menutup modal
-                    removeModalBackdrop(); // Menghapus backdrop
+                    $('#startDate').val(''); // Menghapus nilai tanggal mulai
+                    $('#endDate').val(''); // Menghapus nilai tanggal akhir
+                    $.fn.dataTable.ext.search = []; 
+                    table.draw(); 
+
+                    // Update URL untuk menghapus parameter startDate dan endDate di link download
+                    const downloadLink = 'export_history.php'; 
+                    $('#downloadBtn').attr('href', downloadLink); 
+                    $('#dateFilterModal').modal('hide'); 
+                    removeModalBackdrop(); 
                 });
+
 
                 // Fungsi untuk menghapus backdrop modal
                 function removeModalBackdrop() {
-                    // Menghapus elemen backdrop setelah modal ditutup
                     $('.modal-backdrop').remove();
                 }
             });
