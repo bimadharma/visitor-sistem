@@ -4,7 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <html>
 
 <head>
-    <meta name="viewport" content="width=divace-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visitor App</title>
     <link rel="stylesheet" href="/Visitor-web/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/Visitor-web/assets/css/bootstrap.min.css">

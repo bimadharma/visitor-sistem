@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 24, 2025 at 11:28 AM
+-- Generation Time: Apr 29, 2025 at 05:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -48,6 +48,7 @@ INSERT INTO `users` (`id`, `username`, `password`) VALUES
 
 CREATE TABLE `visitors` (
   `id` int(11) NOT NULL,
+  `tanggal` date DEFAULT current_timestamp(),
   `name` varchar(100) NOT NULL,
   `NoTelepon` varchar(50) DEFAULT NULL,
   `Kegiatan` varchar(100) DEFAULT NULL,
@@ -91,7 +92,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `visitors`
 --
 ALTER TABLE `visitors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=198;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=216;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
