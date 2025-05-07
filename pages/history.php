@@ -27,7 +27,7 @@
             </div>
 
             <!-- Modal Filter Tanggal -->
-            <div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel" aria-hidden="true">
+            <div class="modal fade" id="dateFilterModal" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Modal View Detail -->
-            <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+            <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-black text-white">
@@ -192,7 +192,7 @@
             </div>
 
             <!-- Modal Konfirmasi Hapus -->
-            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
                 <div class="modal-dialog modal-dialog-scrollable d-flex align-items-center justify-content-center" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-danger text-white">
@@ -215,7 +215,7 @@
 
 
             <!-- Modal Edit -->
-            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-warning text-white">
@@ -386,7 +386,6 @@
                     $('#dateFilterModal').modal('hide');
                     removeModalBackdrop();
                 });
-
 
                 // Fungsi untuk menghapus backdrop modal
                 function removeModalBackdrop() {

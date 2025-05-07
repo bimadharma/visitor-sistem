@@ -22,6 +22,7 @@ if (isset($_GET['checkout_all'])) {
 // Ambil data visitor yang belum check-out
 $visitors = $conn->query("SELECT * FROM visitors WHERE checkout_time IS NULL");
 ?>
+
 <div class="container mt-4 my-5 pt-2 position-relative">
     <h3 class="text-center py-4">Check-Out Visitor</h3>
     <div class="position-relative" style="height: 40px;">

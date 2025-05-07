@@ -92,10 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <form method="post">
             <div class="mb-3">
-                <input type="text" name="username" placeholder="&#xf007; Username" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
+                <input type="text" name="username" placeholder="Username" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
             </div>
             <div class="mb-3">
-                <input type="password" name="password" placeholder="&#xf023; Password" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
+                <input type="password" name="password" placeholder="Password" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
             </div>
             <button type="submit" class="btn btn-primary rounded-pill w-100">
                 <i class="bi bi-box-arrow-in-right me-1"></i> Masuk

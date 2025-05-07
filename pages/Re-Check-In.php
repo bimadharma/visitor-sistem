@@ -72,7 +72,7 @@ if (isset($_GET['success'])) {
     <link href="/Visitor-web/assets/js/select2.min.css" rel="stylesheet">
 
     <!-- jQuery lokal -->
-    <script src="/Visitor-web/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="/Visitor-web/assets/js/jquery-3.7.1.min.js"></script>
 
     <!-- Select2 JS lokal -->
     <script src="/Visitor-web/assets/js/select2.min.js"></script>
