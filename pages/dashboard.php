@@ -14,22 +14,14 @@ $still_in_count = $still_in->num_rows;
 <head>
     <style>
         .wallpaper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
             position: relative;
             overflow: hidden;
-            min-height: 100vh;
             width: 100%;
-            padding-top: 0.5rem;
-        }
-
-        .wallpaper::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('/Visitor-web/assets/img/backgroundd.jpeg') center/cover no-repeat;
-            z-index: -1;
+            margin-top: 1rem;
         }
 
         .overlay-content {

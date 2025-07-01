@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Input Ticket -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-primary text-white"><i class="bi bi-ticket-fill"></i></span>
-            <input type="number" name="Ticket" placeholder="Nomor Tiket Helpdesk" required class="form-control">
+            <input type="number" name="Ticket" placeholder="Nomor Tiket Helpdesk" class="form-control">
         </div>
         <div class="row">
             <!-- KTP -->
@@ -209,7 +209,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <!-- Mode Kamera -->
                     <div id="ktpCameraSection" class="d-none">
                         <p class="text-muted mb-1">Mode Kamera</p>
-                        <video id="ktpVideo" width="100%" height="225" autoplay muted class="border rounded-3"></video>
+                        <div id="ktpWrapper" class="position-relative" style="width: 100%; height: 225px;">
+                            <video id="ktpVideo" width="100%" height="225" autoplay muted class="border rounded-3"></video>
+
+                            <!-- BINGKAI DENGAN TEKS -->
+                            <div id="ktpFrame" class="position-absolute border border-3 border-white d-flex justify-content-center align-items-center text-center"
+                                style="top: 50%; left: 50%; width: 80%; height: 75%; transform: translate(-50%, -50%); pointer-events: none; border-style: dashed;">
+                                <span class="text-white fw-bold" style="text-shadow: 1px 1px 2px black;">Posisi KTP di dalam kotak</span>
+                            </div>
+                        </div>
                         <img id="ktpPreviewFoto" src="" alt="Hasil Foto KTP" class="border rounded-3 mt-2 d-none" width="280" height="215">
                         <canvas id="ktpCanvas" width="300" height="225" class="d-none"></canvas>
                         <button type="button" id="ktpCaptureBtn" class="btn btn-success mt-2 w-100">Ambil Foto Sekarang</button>
@@ -313,14 +321,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         ktpCaptureBtn.addEventListener("click", async function() {
             if (!sudahAmbilKTP) {
-                ktpCanvas.getContext('2d').drawImage(ktpVideo, 0, 0, 300, 225);
-                const imageData = ktpCanvas.toDataURL("image/png");
+                const canvas = ktpCanvas;
+                const ctx = canvas.getContext('2d');
+                const frame = document.getElementById("ktpFrame");
+                const video = ktpVideo;
 
+                // Hitung posisi dan ukuran frame relatif terhadap video
+                const frameRect = frame.getBoundingClientRect();
+                const videoRect = video.getBoundingClientRect();
+
+                const scaleX = video.videoWidth / videoRect.width;
+                const scaleY = video.videoHeight / videoRect.height;
+
+                const cropX = (frameRect.left - videoRect.left) * scaleX;
+                const cropY = (frameRect.top - videoRect.top) * scaleY;
+                const cropWidth = frameRect.width * scaleX;
+                const cropHeight = frameRect.height * scaleY;
+
+                // Atur ukuran canvas berdasarkan hasil crop
+                canvas.width = cropWidth;
+                canvas.height = cropHeight;
+
+                // Gambar area video yang sesuai dengan kotak frame
+                ctx.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+                // Simpan ke base64
+                const imageData = canvas.toDataURL("image/png");
+
+                // Tampilkan preview
                 ktpPreviewFoto.src = imageData;
                 ktpPreviewFoto.classList.remove("d-none");
                 fotoKTPBase64.value = imageData;
 
                 ktpVideo.classList.add("d-none");
+
+                if (ktpWrapper) ktpWrapper.classList.add("d-none");
+
                 ktpCaptureBtn.innerText = "Ulang Foto";
                 ktpCaptureBtn.classList.replace("btn-success", "btn-warning");
 
@@ -336,6 +372,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ktpPreviewFoto.classList.add("d-none");
                     ktpVideo.classList.remove("d-none");
 
+                    if (ktpWrapper) ktpWrapper.classList.remove("d-none");
+
                     ktpCaptureBtn.innerText = "Ambil Foto Sekarang";
                     ktpCaptureBtn.classList.replace("btn-warning", "btn-success");
 
@@ -345,6 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
         });
+
 
 
 
@@ -437,26 +476,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     });
 </script>
 <script>
-document.getElementById('fotoKTP').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    document.getElementById('fotoKTP').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
 
-    if (file && !allowedTypes.includes(file.type)) {
-        alert('Hanya file gambar (jpg, jpeg, png, webp) yang diperbolehkan.');
-        event.target.value = ''; // Reset input
-        return;
-    }
+        if (file && !allowedTypes.includes(file.type)) {
+            alert('Hanya file gambar (jpg, jpeg, png, webp) yang diperbolehkan.');
+            event.target.value = ''; // Reset input
+            return;
+        }
 
-    // Preview jika valid
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById('ktpPreview');
-        preview.src = e.target.result;
-        preview.classList.remove('d-none');
-        document.getElementById('labelKTP').classList.add('d-none');
-    };
-    reader.readAsDataURL(file);
-});
+        // Preview jika valid
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('ktpPreview');
+            preview.src = e.target.result;
+            preview.classList.remove('d-none');
+            document.getElementById('labelKTP').classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
+    });
 </script>
 
 

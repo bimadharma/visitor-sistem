@@ -110,6 +110,7 @@
                                         data-telepon="<?= $row['NoTelepon'] ?>"
                                         data-kegiatan="<?= $row['Kegiatan'] ?>"
                                         data-perusahaan="<?= $row['Perusahaan'] ?>"
+                                        data-ticket="<?= $row['Ticket'] ?>"
                                         data-checkin="<?= $row['checkin_time'] ?>"
                                         data-checkout="<?= $row['checkout_time'] ?>"
                                         data-bs-toggle="modal" data-bs-target="#editModal">
@@ -241,6 +242,19 @@
                                     <label class="form-label">Perusahaan</label>
                                     <input type="text" class="form-control" name="Perusahaan" id="editPerusahaan" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ticket</label>
+                                    <input type="text" class="form-control" name="Ticket" id="editTicket">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Waktu Check-In</label>
+                                    <input type="datetime-local" class="form-control" name="checkin_time" id="editCheckin">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Waktu Check-Out</label>
+                                    <input type="datetime-local" class="form-control" name="checkout_time" id="editCheckout">
+                                </div>
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -324,14 +338,33 @@
 
         <script>
             $(document).ready(function() {
-                // Edit Visitor
+                function formatDateTimeLocal(datetimeStr) {
+                    if (!datetimeStr) return '';
+
+                    const date = new Date(datetimeStr.replace(' ', 'T'));
+                    const offset = date.getTimezoneOffset();
+                    const localDate = new Date(date.getTime() - (offset * 60000)); // UTC ke lokal
+
+                    return localDate.toISOString().slice(0, 16); // hasilnya: "2025-05-19T21:21"
+                }
+
+
                 $('.editVisitor').on('click', function() {
                     $('#editId').val($(this).data('id'));
                     $('#editName').val($(this).data('name'));
                     $('#editTelepon').val($(this).data('telepon'));
                     $('#editKegiatan').val($(this).data('kegiatan'));
                     $('#editPerusahaan').val($(this).data('perusahaan'));
+                    $('#editTicket').val($(this).data('ticket'));
+
+                    // Format datetime for input
+                    const checkin = formatDateTimeLocal($(this).data('checkin'));
+                    const checkout = formatDateTimeLocal($(this).data('checkout'));
+
+                    $('#editCheckin').val(checkin);
+                    $('#editCheckout').val(checkout);
                 });
+
 
                 // Delete Visitor
                 $('.deleteVisitor').on('click', function() {

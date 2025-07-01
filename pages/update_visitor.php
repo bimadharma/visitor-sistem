@@ -7,13 +7,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $NoTelepon = mysqli_real_escape_string($conn, $_POST['NoTelepon']);
     $Kegiatan = mysqli_real_escape_string($conn, $_POST['Kegiatan']);
     $Perusahaan = mysqli_real_escape_string($conn, $_POST['Perusahaan']);
+    $Ticket = mysqli_real_escape_string($conn, $_POST['Ticket']);
 
     // Mulai membangun query
     $sql = "UPDATE visitors SET 
                 name='$name', 
                 NoTelepon='$NoTelepon', 
                 Kegiatan='$Kegiatan', 
-                Perusahaan='$Perusahaan'";
+                Perusahaan='$Perusahaan',
+                Ticket='$Ticket'";
 
     // Tambahkan checkin_time jika diisi
     if (!empty($_POST['checkin_time'])) {

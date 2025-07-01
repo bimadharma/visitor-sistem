@@ -34,7 +34,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         body {
+            position: relative;
+            overflow: hidden;
             min-height: 100vh;
+            background: url('/Visitor-web/assets/img/backgroundd.jpeg') center/cover no-repeat fixed;
+            margin: 0;
+        }
+
+        .overlay-content {
+            position: relative;
+            z-index: 1;
+            padding: 1.5rem;
         }
 
         body.modal-open {
