@@ -4,9 +4,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visitor App</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/Visitor-web/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/Visitor-web/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Visitor-web/assets/js/datatables.min.css">
+    <link rel="stylesheet" href="/Visitor-web/assets/js/dataTables.bootstrap5.min.css">
+
+    <script src="/Visitor-web/assets/js/jquery-3.7.1.min.js"></script>
+    <script src="/Visitor-web/assets/js/jquery.dataTables.min.js"></script>
+    <script src="/Visitor-web/assets/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/Visitor-web/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/Visitor-web/assets/js/datatables.js"></script>
     <style>
         .nav-link.active {
             background-color: rgba(0, 123, 255, 0.64);
@@ -25,11 +34,49 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         body {
+            position: relative;
+            overflow: hidden;
             min-height: 100vh;
+            background: url('/Visitor-web/assets/img/backgroundd.jpeg') center/cover no-repeat fixed;
+            margin: 0;
+        }
+
+        .overlay-content {
+            position: relative;
+            z-index: 1;
+            padding: 1.5rem;
         }
 
         body.modal-open {
             padding: 0 !important;
+        }
+
+        .logo-navbar {
+            height: 40px;
+        }
+
+        #visitorTable {
+            font-size: 0.8rem;
+        }
+
+        .action-buttons .btn {
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 576px) {
+            .logo-navbar {
+                height: 30px;
+            }
         }
     </style>
     <link href="/Visitor-web/assets/img/logo-eximbank.png" rel="shortcut icon">
@@ -38,8 +85,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-3 shadow">
         <div class="container-fluid">
-            <a class="navbar-brand p-2" href="/Visitor-web/pages/dashboard.php">
-                <img src="/Visitor-web/assets/img/logo.png" alt="Visitor App Logo" height="40" class="d-inline-block align-text-top">
+            <a class="navbar-brand" href="/Visitor-web/pages/dashboard.php">
+                <img src="/Visitor-web/assets/img/logo.png" alt="Visitor App Logo" height="40" class="logo-navbar d-inline-block align-text-top">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -49,22 +96,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'dashboard.php' ? 'active' : '' ?>" href="/Visitor-web/pages/dashboard.php">Dashboard</a>
                     </li>
-                    <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role'])): ?>
-                        <?php if ($_SESSION['user']['role'] == 'admin'): ?>
-                            <!-- Menu khusus admin -->
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'registration.php' ? 'active' : '' ?>" href="/Visitor-web/pages/registration.php">Registration</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'Re-Check-In.php' ? 'active' : '' ?>" href="/Visitor-web/pages/Re-Check-In.php">Re-Check-In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
-                            </li>
-                        <?php endif; ?>
+
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <!-- Menu yang ditampilkan setelah login (bisa untuk semua user) -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'registration.php' ? 'active' : '' ?>" href="/Visitor-web/pages/registration.php">Registration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'Re-Check-In.php' ? 'active' : '' ?>" href="/Visitor-web/pages/Re-Check-In.php">Re-Check-In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'checkout.php' ? 'active' : '' ?>" href="/Visitor-web/pages/checkout.php">Check-Out</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $current_page == 'history.php' ? 'active' : '' ?>" href="/Visitor-web/pages/history.php">History</a>
+                        </li>
+
                         <!-- Logout untuk semua user -->
                         <li class="nav-item">
                             <a href="#" class="btn btn-danger text-white mx-2 p-2" data-bs-toggle="modal" data-bs-target="#logoutModal">
@@ -98,5 +145,3 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

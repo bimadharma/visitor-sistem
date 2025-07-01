@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 include '../includes/config.php';
 include '../includes/header.php';
@@ -9,32 +10,78 @@ if (isset($_SESSION['user'])) {
     exit;
 }
 
+function loginWithLDAP($username, $password)
+{
+    $ldap_server = "IEB-JKTDC02-DEV.ieb.go.id";
+    $domain = "ieb";
+    $ldap_user = $domain . "\\" . $username;
+
+    $ldap_conn = ldap_connect($ldap_server);
+
+    if (!$ldap_conn) {
+        return false;
+    }
+
+    ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
+
+    $bind = @ldap_bind($ldap_conn, $ldap_user, $password);
+
+    if ($bind) {
+        // Ambil informasi user terlebih dahulu
+        $user_search = ldap_search($ldap_conn, "dc=ieb,dc=go,dc=id", "(sAMAccountName=$username)");
+        $user_entries = ldap_get_entries($ldap_conn, $user_search);
+
+        if ($user_entries['count'] > 0) {
+            $user_dn = $user_entries[0]['dn'];
+            $_SESSION['displayName'] = $user_entries[0]['cn'][0]; // Simpan CN ke session
+
+            // Cek apakah user adalah anggota dari grup di OU=Security Group
+            $group_search = ldap_search($ldap_conn, "OU=Security Group,dc=ieb,dc=go,dc=id", 
+                "(member=$user_dn)");
+            $group_entries = ldap_get_entries($ldap_conn, $group_search);
+
+            if ($group_entries['count'] > 0) {
+                ldap_unbind($ldap_conn);
+                return true;
+            }
+        }
+    }
+
+    ldap_unbind($ldap_conn);
+    return false;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    // Gunakan prepared statement untuk menghindari SQL Injection
-    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username); // "s" berarti string
+    // Cek ke database dulu
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     $stmt->close();
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user'] = [
-            'username' => $user['username'],
-            'role' => $user['role']
-        ];
+        // Login sukses dari DB
+        $_SESSION['user'] = ['username' => $user['username']];
         $_SESSION['LAST_ACTIVITY'] = time();
         header("Location: ../pages/dashboard.php");
         exit;
-    }
-    else {
+    } elseif (loginWithLDAP($username, $password)) {
+        // Login sukses dari LDAP
+        $_SESSION['user'] = ['username' => $username];
+        $_SESSION['LAST_ACTIVITY'] = time();
+        header("Location: ../pages/dashboard.php");
+        exit;
+    } else {
         $error = "Username atau password salah.";
     }
 }
 ?>
+
 
 <!-- FORM LOGIN -->
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
@@ -45,10 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <form method="post">
             <div class="mb-3">
-                <input type="text" name="username" placeholder="&#xf007; Username" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
+                <input type="text" name="username" placeholder="Username" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
             </div>
             <div class="mb-3">
-                <input type="password" name="password" placeholder="&#xf023; Password" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
+                <input type="password" name="password" placeholder="Password" required class="form-control rounded-pill" style="font-family: 'FontAwesome', 'Arial';">
             </div>
             <button type="submit" class="btn btn-primary rounded-pill w-100">
                 <i class="bi bi-box-arrow-in-right me-1"></i> Masuk
@@ -67,5 +114,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </a>
     </div>
 </div>
-
 <?php include '../includes/footer.php'; ?>
